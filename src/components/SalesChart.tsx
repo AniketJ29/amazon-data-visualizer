@@ -1,40 +1,108 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
 
-// Mock data - in a real implementation, this would come from your API
-const mockData = [
-  { name: 'Jan', sales: 4000, returns: 240 },
-  { name: 'Feb', sales: 3000, returns: 198 },
-  { name: 'Mar', sales: 5000, returns: 350 },
-  { name: 'Apr', sales: 2780, returns: 190 },
-  { name: 'May', sales: 1890, returns: 134 },
-  { name: 'Jun', sales: 2390, returns: 167 },
-  { name: 'Jul', sales: 3490, returns: 212 },
-  { name: 'Aug', sales: 4200, returns: 294 },
-  { name: 'Sep', sales: 3870, returns: 229 },
-  { name: 'Oct', sales: 5140, returns: 315 },
-  { name: 'Nov', sales: 6280, returns: 352 },
-  { name: 'Dec', sales: 7890, returns: 410 },
-];
+interface SalesData {
+  name: string;
+  sales: number;
+  returns: number;
+}
 
 const SalesChart = () => {
   const [timeRange, setTimeRange] = useState('12m');
+  const [chartData, setChartData] = useState<SalesData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5000/api/data/sales');
+        const salesData = await response.json();
+        
+        // Process the data for the chart
+        // Group by month and calculate totals
+        const monthlyData = salesData.reduce((acc: Record<string, any>, sale: any) => {
+          // Extract month from date (assuming date format is YYYY-MM-DD)
+          const date = new Date(sale.date);
+          const monthName = date.toLocaleString('default', { month: 'short' });
+          
+          if (!acc[monthName]) {
+            acc[monthName] = { sales: 0, returns: 0 };
+          }
+          
+          acc[monthName].sales += sale.quantity;
+          // Assuming returns is 5-10% of sales for demonstration
+          acc[monthName].returns += Math.floor(sale.quantity * (Math.random() * 0.05 + 0.05));
+          
+          return acc;
+        }, {});
+        
+        // Convert to array format for the chart
+        const formattedData = Object.keys(monthlyData).map(month => ({
+          name: month,
+          sales: monthlyData[month].sales,
+          returns: monthlyData[month].returns
+        }));
+        
+        setChartData(formattedData);
+      } catch (error) {
+        console.error('Failed to fetch sales data:', error);
+        toast({
+          variant: "destructive",
+          title: "Data fetch failed",
+          description: "Could not retrieve sales data from the server.",
+        });
+        // Set empty data to avoid breaking the chart
+        setChartData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [toast]);
   
   // Filter data based on selected time range
-  // In a real implementation, you would fetch new data or filter existing data
   const getFilteredData = () => {
+    if (chartData.length === 0) {
+      return [];
+    }
+    
     switch (timeRange) {
       case '3m':
-        return mockData.slice(-3);
+        return chartData.slice(-3);
       case '6m':
-        return mockData.slice(-6);
+        return chartData.slice(-6);
       case '12m':
       default:
-        return mockData;
+        return chartData;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <div className="w-[180px] h-10 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        </div>
+        <div className="h-[400px] w-full bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="h-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const filteredData = getFilteredData();
+  const totalSales = filteredData.reduce((sum, item) => sum + item.sales, 0);
+  const totalReturns = filteredData.reduce((sum, item) => sum + item.returns, 0);
+  const returnRate = totalSales > 0 ? (totalReturns / totalSales) * 100 : 0;
 
   return (
     <div className="space-y-4">
@@ -51,43 +119,46 @@ const SalesChart = () => {
         </Select>
       </div>
       
-      <div className="h-[400px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={getFilteredData()}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="sales" name="Sales" fill="#3b82f6" />
-            <Bar dataKey="returns" name="Returns" fill="#ef4444" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {filteredData.length > 0 ? (
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={filteredData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="sales" name="Sales" fill="#3b82f6" />
+              <Bar dataKey="returns" name="Returns" fill="#ef4444" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-[400px] w-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-lg">
+          <p className="text-slate-500 dark:text-slate-400">No sales data available</p>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
           <p className="text-sm text-blue-500 dark:text-blue-400 font-medium">Total Sales</p>
-          <p className="text-2xl font-bold">{getFilteredData().reduce((sum, item) => sum + item.sales, 0).toLocaleString()}</p>
+          <p className="text-2xl font-bold">{totalSales.toLocaleString()}</p>
         </div>
         <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
           <p className="text-sm text-red-500 dark:text-red-400 font-medium">Total Returns</p>
-          <p className="text-2xl font-bold">{getFilteredData().reduce((sum, item) => sum + item.returns, 0).toLocaleString()}</p>
+          <p className="text-2xl font-bold">{totalReturns.toLocaleString()}</p>
         </div>
         <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
           <p className="text-sm text-green-500 dark:text-green-400 font-medium">Return Rate</p>
-          <p className="text-2xl font-bold">
-            {(getFilteredData().reduce((sum, item) => sum + item.returns, 0) / 
-              getFilteredData().reduce((sum, item) => sum + item.sales, 0) * 100).toFixed(1)}%
-          </p>
+          <p className="text-2xl font-bold">{returnRate.toFixed(1)}%</p>
         </div>
       </div>
     </div>

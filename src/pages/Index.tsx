@@ -17,32 +17,36 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate checking connection to backend
+    // Check connection to backend
     const checkConnection = async () => {
       try {
-        // In a real implementation, you would fetch from your Flask backend
-        // const response = await fetch('http://localhost:5000/api/status');
-        // const data = await response.json();
-        // setIsConnected(data.status === 'connected');
-
-        // For now, we'll simulate a successful connection after 2 seconds
-        setTimeout(() => {
-          setIsConnected(true);
-          setIsLoading(false);
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5000/api/status');
+        const data = await response.json();
+        setIsConnected(data.status === 'connected');
+        
+        if (data.status === 'connected') {
           toast({
             title: "Connection established",
-            description: "Successfully connected to the data source",
+            description: "Successfully connected to MongoDB Cloud",
           });
-        }, 2000);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Connection failed",
+            description: data.message || "Could not connect to MongoDB Cloud",
+          });
+        }
       } catch (error) {
         console.error('Failed to connect to backend:', error);
         setIsConnected(false);
-        setIsLoading(false);
         toast({
           variant: "destructive",
           title: "Connection failed",
-          description: "Could not connect to the data source. Please check your backend server.",
+          description: "Could not connect to the backend server. Please check if Flask server is running.",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -63,7 +67,7 @@ const Index = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Connection Error</AlertTitle>
             <AlertDescription>
-              Unable to connect to the data source. Please check your backend server and database connection.
+              Unable to connect to MongoDB Cloud. Please check your backend server and database connection.
             </AlertDescription>
           </Alert>
         ) : (
