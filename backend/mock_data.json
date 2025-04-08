@@ -1,0 +1,191 @@
+
+{
+  "products": [
+    {
+      "id": "P001",
+      "name": "Wireless Earbuds",
+      "category": "Electronics",
+      "price": 49.99,
+      "cost": 22.50,
+      "inventory": 156,
+      "rating": 4.3
+    },
+    {
+      "id": "P002",
+      "name": "Kitchen Knife Set",
+      "category": "Home & Kitchen",
+      "price": 39.99,
+      "cost": 18.75,
+      "inventory": 89,
+      "rating": 4.7
+    },
+    {
+      "id": "P003",
+      "name": "Yoga Mat",
+      "category": "Sports & Outdoors",
+      "price": 24.99,
+      "cost": 9.80,
+      "inventory": 112,
+      "rating": 4.5
+    },
+    {
+      "id": "P004",
+      "name": "Smart Watch",
+      "category": "Electronics",
+      "price": 89.99,
+      "cost": 45.25,
+      "inventory": 78,
+      "rating": 4.1
+    },
+    {
+      "id": "P005",
+      "name": "Coffee Maker",
+      "category": "Home & Kitchen",
+      "price": 59.99,
+      "cost": 27.80,
+      "inventory": 64,
+      "rating": 4.6
+    },
+    {
+      "id": "P006",
+      "name": "Bluetooth Speaker",
+      "category": "Electronics",
+      "price": 34.99,
+      "cost": 16.20,
+      "inventory": 103,
+      "rating": 4.4
+    },
+    {
+      "id": "P007",
+      "name": "Running Shoes",
+      "category": "Clothing",
+      "price": 49.99,
+      "cost": 23.50,
+      "inventory": 92,
+      "rating": 4.2
+    },
+    {
+      "id": "P008",
+      "name": "Non-Fiction Book",
+      "category": "Books",
+      "price": 19.99,
+      "cost": 8.30,
+      "inventory": 145,
+      "rating": 4.8
+    },
+    {
+      "id": "P009",
+      "name": "Phone Case",
+      "category": "Electronics",
+      "price": 14.99,
+      "cost": 5.40,
+      "inventory": 217,
+      "rating": 4.0
+    },
+    {
+      "id": "P010",
+      "name": "Chef's Apron",
+      "category": "Home & Kitchen",
+      "price": 17.99,
+      "cost": 7.25,
+      "inventory": 83,
+      "rating": 4.5
+    }
+  ],
+  "sales": [
+    {
+      "date": "2025-03-01",
+      "product_id": "P001",
+      "quantity": 32,
+      "revenue": 1599.68
+    },
+    {
+      "date": "2025-03-01",
+      "product_id": "P002",
+      "quantity": 15,
+      "revenue": 599.85
+    },
+    {
+      "date": "2025-03-01",
+      "product_id": "P003",
+      "quantity": 21,
+      "revenue": 524.79
+    },
+    {
+      "date": "2025-03-02",
+      "product_id": "P001",
+      "quantity": 28,
+      "revenue": 1399.72
+    },
+    {
+      "date": "2025-03-02",
+      "product_id": "P004",
+      "quantity": 12,
+      "revenue": 1079.88
+    },
+    {
+      "date": "2025-03-02",
+      "product_id": "P006",
+      "quantity": 18,
+      "revenue": 629.82
+    },
+    {
+      "date": "2025-03-03",
+      "product_id": "P002",
+      "quantity": 24,
+      "revenue": 959.76
+    },
+    {
+      "date": "2025-03-03",
+      "product_id": "P005",
+      "quantity": 10,
+      "revenue": 599.90
+    },
+    {
+      "date": "2025-03-03",
+      "product_id": "P008",
+      "quantity": 31,
+      "revenue": 619.69
+    },
+    {
+      "date": "2025-03-04",
+      "product_id": "P001",
+      "quantity": 25,
+      "revenue": 1249.75
+    }
+  ],
+  "costs": [
+    {
+      "month": "2025-03",
+      "product_cost": 25680.42,
+      "shipping": 9865.20,
+      "marketing": 12500.00,
+      "returns": 6324.15,
+      "platform_fees": 9876.35
+    },
+    {
+      "month": "2025-02",
+      "product_cost": 24123.65,
+      "shipping": 9254.18,
+      "marketing": 11800.00,
+      "returns": 5897.42,
+      "platform_fees": 9154.87
+    },
+    {
+      "month": "2025-01",
+      "product_cost": 22987.21,
+      "shipping": 8756.34,
+      "marketing": 11200.00,
+      "returns": 5324.87,
+      "platform_fees": 8765.32
+    },
+    {
+      "month": "2024-12",
+      "product_cost": 28754.65,
+      "shipping": 11234.56,
+      "marketing": 13500.00,
+      "returns": 7234.98,
+      "platform_fees": 10987.65
+    }
+  ]
+}
