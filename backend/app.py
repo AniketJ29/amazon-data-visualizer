@@ -24,7 +24,7 @@ CORS(app)  # Enable CORS for all routes
 MONGO_URI = os.getenv("MONGO_URI")
 try:
     client = MongoClient(MONGO_URI)
-    db = client.amazon_data
+    db = client.ecom  # Use actual database name 'ecom'
     logger.info("Connected to MongoDB Cloud")
 except Exception as e:
     logger.error(f"MongoDB connection error: {str(e)}")
@@ -52,17 +52,19 @@ def refresh_data():
         if not db:
             return jsonify({"status": "error", "message": "Database not connected"}), 500
             
-        # Fetch latest data from MongoDB
-        products = list(db.products.find({}, {'_id': 0}))
+        # Fetch latest data from MongoDB using the actual collections
+        products = list(db.product.find({}, {'_id': 0}))
+        orders = list(db.order.find({}, {'_id': 0}))
+        customers = list(db.customer.find({}, {'_id': 0}))
         sales = list(db.sales.find({}, {'_id': 0}))
-        costs = list(db.costs.find({}, {'_id': 0}))
         
         return jsonify({
             "status": "success", 
             "data": {
                 "products": products, 
-                "sales": sales, 
-                "costs": costs
+                "orders": orders,
+                "customers": customers,
+                "sales": sales
             }
         })
     except Exception as e:
@@ -102,10 +104,36 @@ def get_products():
         if not db:
             return jsonify({"status": "error", "message": "Database not connected"}), 500
             
-        products = list(db.products.find({}, {'_id': 0}))
+        products = list(db.product.find({}, {'_id': 0}))
         return jsonify(products)
     except Exception as e:
         logger.error(f"Error fetching products: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/data/orders', methods=['GET'])
+def get_orders():
+    """Get order data"""
+    try:
+        if not db:
+            return jsonify({"status": "error", "message": "Database not connected"}), 500
+            
+        orders = list(db.order.find({}, {'_id': 0}))
+        return jsonify(orders)
+    except Exception as e:
+        logger.error(f"Error fetching orders: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/data/customers', methods=['GET'])
+def get_customers():
+    """Get customer data"""
+    try:
+        if not db:
+            return jsonify({"status": "error", "message": "Database not connected"}), 500
+            
+        customers = list(db.customer.find({}, {'_id': 0}))
+        return jsonify(customers)
+    except Exception as e:
+        logger.error(f"Error fetching customers: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/data/sales', methods=['GET'])
@@ -121,17 +149,18 @@ def get_sales():
         logger.error(f"Error fetching sales: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/data/costs', methods=['GET'])
-def get_costs():
-    """Get cost data"""
+@app.route('/api/data/categories', methods=['GET'])
+def get_categories():
+    """Get unique product categories"""
     try:
         if not db:
             return jsonify({"status": "error", "message": "Database not connected"}), 500
             
-        costs = list(db.costs.find({}, {'_id': 0}))
-        return jsonify(costs)
+        # Get distinct categories from products collection
+        categories = db.product.distinct("category")
+        return jsonify(categories)
     except Exception as e:
-        logger.error(f"Error fetching costs: {str(e)}")
+        logger.error(f"Error fetching categories: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':

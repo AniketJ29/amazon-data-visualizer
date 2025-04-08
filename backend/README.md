@@ -1,7 +1,7 @@
 
 # Amazon Data Visualizer - Backend
 
-This is the Python Flask backend for the Amazon Data Visualizer application. It provides APIs to connect to MongoDB Cloud, fetch and process data, and integrate with Ollama for AI-powered analytics using the Llama 3.2 model.
+This is the Python Flask backend for the Amazon Data Visualizer application. It provides APIs to connect to MongoDB Atlas, fetch and process data, and integrate with Ollama for AI-powered analytics using the Llama 3.2 model.
 
 ## Setup
 
@@ -25,11 +25,11 @@ This is the Python Flask backend for the Amazon Data Visualizer application. It 
    pip install -r requirements.txt
    ```
 
-4. Configure MongoDB Cloud connection:
+4. Configure MongoDB Atlas connection:
    - Create a `.env` file in the backend directory
    - Add your MongoDB connection string:
      ```
-     MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/amazon_data
+     MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ecom
      ```
    - Replace `<username>`, `<password>`, and `<cluster>` with your MongoDB Atlas credentials
 
@@ -42,42 +42,23 @@ The server will start at http://localhost:5000
 
 ## MongoDB Database Structure
 
-The application expects the following collections in your MongoDB database:
+The application connects to the "ecom" database in MongoDB Atlas with the following collections:
 
-1. `products` collection with documents in this format:
-   ```json
-   {
-     "id": "P001",
-     "name": "Product Name",
-     "category": "Category",
-     "price": 49.99,
-     "cost": 22.50,
-     "inventory": 156,
-     "rating": 4.3
-   }
-   ```
+1. `product` collection with documents containing product details including:
+   - name
+   - price
+   - category
+   - description
+   - inventory levels
+   - etc.
 
-2. `sales` collection with documents in this format:
-   ```json
-   {
-     "date": "2025-03-01",
-     "product_id": "P001",
-     "quantity": 32,
-     "revenue": 1599.68
-   }
-   ```
+2. `customer` collection with customer information
 
-3. `costs` collection with documents in this format:
-   ```json
-   {
-     "month": "2025-03",
-     "product_cost": 25680.42,
-     "shipping": 9865.20,
-     "marketing": 12500.00,
-     "returns": 6324.15,
-     "platform_fees": 9876.35
-   }
-   ```
+3. `order` collection with order details
+
+4. `sales` collection with sales data
+
+5. `admins` collection for users who can manage products
 
 ## API Endpoints
 
@@ -85,8 +66,10 @@ The application expects the following collections in your MongoDB database:
 - `GET /api/refresh` - Refresh data from MongoDB
 - `POST /api/ask` - Send a question to Llama 3.2 via Ollama
 - `GET /api/data/products` - Get product data
+- `GET /api/data/orders` - Get order data
+- `GET /api/data/customers` - Get customer data
 - `GET /api/data/sales` - Get sales data
-- `GET /api/data/costs` - Get cost data
+- `GET /api/data/categories` - Get unique product categories
 
 ## Ollama Integration
 
